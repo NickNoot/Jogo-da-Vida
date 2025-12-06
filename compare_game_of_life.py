@@ -167,37 +167,41 @@ def main():
 
         all_results.append(current_grid_results) # Adiciona os resultados desta grade à lista geral
 
+
     # --- RELATÓRIO FINAL DE COMPARAÇÃO ---
     print("\n" + "="*70)
     print("               RELATÓRIO DE COMPARAÇÃO FINAL               ")
     print("======================================================================")
     print("\nSumário dos Resultados por Tamanho de Grade:")
     
-    # Gerar a tabela no formato especificado
+    # Gerar a tabela em texto simples usando print
     if all_results:
-        # Extrai os cabeçalhos das chaves do primeiro dicionário de resultados para garantir consistência
         headers = list(all_results[0].keys())
         
-        # Inicia a estrutura da tabela HTML para facilitar a integração em documentação ou relatórios.
-        html_table = '<table class="data-table">\n'
-        html_table += '  <thead>\n'
-        html_table += '    <tr>\n'
-        for header in headers:
-            html_table += f'      <th scope="col">{header}</th>\n'
-        html_table += '    </tr>\n'
-        html_table += '  </thead>\n'
-        html_table += '  <tbody>\n'
-        
+        # Calcular a largura máxima para cada coluna para um alinhamento bonito
+        # Isso garante que a tabela seja legível, ajustando a largura das colunas
+        # dinamicamente com base no conteúdo mais longo de cada uma.
+        column_widths = {header: len(header) for header in headers}
         for result in all_results:
-            html_table += '    <tr>\n'
             for header in headers:
-                value = result.get(header, "N/A") # Usa get() com default para robustez
-                html_table += f'      <td>{value}</td>\n'
-            html_table += '    </tr>\n'
-        html_table += '  </tbody>\n'
-        html_table += '</table>'
+                # Converte o valor para string para calcular o comprimento, tratando "N/A"
+                value_str = str(result.get(header, "N/A"))
+                column_widths[header] = max(column_widths[header], len(value_str))
         
-        print(html_table) # Imprime a tabela formatada
+        # Imprimir cabeçalho
+        # A f-string f"{h:<{column_widths[h]}}" formata o texto 'h' (cabeçalho)
+        # para ser alinhado à esquerda ('<') e ter uma largura igual a 'column_widths[h]'.
+        header_line = " | ".join([f"{h:<{column_widths[h]}}" for h in headers])
+        print("-" * len(header_line))
+        print(header_line)
+        print("-" * len(header_line))
+        
+        # Imprimir dados
+        for result in all_results:
+            # Similarmente, formata cada valor de dado para alinhar com seu respectivo cabeçalho.
+            data_line = " | ".join([f"{str(result.get(h, 'N/A')):<{column_widths[h]}}" for h in headers])
+            print(data_line)
+        print("-" * len(header_line))
 
     print("\n--- Análise de Escalabilidade e Considerações Finais ---")
     print("  Ao analisar a tabela acima, observe como os 'Speedup' variam com o aumento do 'Grid Size'.")
