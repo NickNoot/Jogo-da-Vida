@@ -338,8 +338,7 @@ class GameOfLifeDistributed(GameOfLifeSequential):
         
         # Fecha o socket do servidor principal.
         if self.server_socket:
-            try:
-                self.server_socket.shutdown(socket.SHUT_RDWR)
+            try:   
                 self.server_socket.close()
             except socket.error as e:
                 print(f"Erro ao fechar server socket: {e}")
@@ -389,4 +388,5 @@ if __name__ == "__main__":
     finally:
         # Garante que o master seja desligado mesmo em caso de erro.
         if 'distributed_game' in locals() and distributed_game.server_socket:
+
             distributed_game.shutdown()
